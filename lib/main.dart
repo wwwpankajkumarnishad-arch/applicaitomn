@@ -179,6 +179,8 @@ class AppHome extends StatelessWidget {
   }
 }
 
+import 'widgets/feature_card.dart';
+
 class FeatureTile extends StatelessWidget {
   final String title;
   final String route;
@@ -187,14 +189,7 @@ class FeatureTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(title),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => Navigator.pushNamed(context, route),
-      ),
-    );
+    return FeatureCard(title: title, route: route, icon: icon);
   }
 }
 
@@ -580,6 +575,8 @@ class _QrScanPayScreenState extends State<QrScanPayScreen> {
   }
 }
 
+import 'widgets/transaction_tile.dart';
+
 class TransactionsScreen extends StatelessWidget {
   static const route = '/transactions';
   const TransactionsScreen({super.key});
@@ -594,13 +591,7 @@ class TransactionsScreen extends StatelessWidget {
         itemCount: txs.length,
         itemBuilder: (_, i) {
           final t = txs[i];
-          final isDebit = t.amount < 0;
-          return ListTile(
-            leading: Icon(isDebit ? Icons.remove_circle : Icons.add_circle, color: isDebit ? Colors.red : Colors.green),
-            title: Text(t.description),
-            subtitle: Text('${t.type} • ${t.date}'),
-            trailing: Text((isDebit ? '-' : '+') + '₹${t.amount.abs().toStringAsFixed(2)}'),
-          );
+          return TransactionTile(item: t);
         },
       ),
     );
