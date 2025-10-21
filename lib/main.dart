@@ -11,6 +11,8 @@ import 'services/demo_api.dart';
 import 'widgets/capture_scaffold.dart';
 import 'widgets/section.dart';
 import 'widgets/primary_button.dart';
+import 'widgets/feature_card.dart';
+import 'widgets/transaction_tile.dart';
 import 'theme/app_theme.dart';
 import 'widgets/app_shell.dart';
 
@@ -611,8 +613,6 @@ class _QrScanPayScreenState extends State<QrScanPayScreen> {
     );
   }
 }
-
-import 'widgets/transaction_tile.dart';
 
 class TransactionsScreen extends StatelessWidget {
   static const route = '/transactions';
