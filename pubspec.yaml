@@ -14,7 +14,7 @@ dependencies:
   # State management
   provider:
 
-  # Firebase
+  # Firebase (optional - wire up when configs are provided)
   firebase_core:
   firebase_messaging:
   firebase_crashlytics:
@@ -25,6 +25,7 @@ dependencies:
   intl:
   package_info_plus:
   device_info_plus:
+  path_provider:
 
   # UI/UX
   google_fonts:
@@ -37,9 +38,6 @@ dependencies:
   webview_flutter:
   qr_code_scanner:
   qr_flutter:
-
-  # Payments and UPI (placeholder, integrate per your backend/api)
-  # Add specific packages as needed for your UPI/Recharge providers
 
   # Security and storage
   flutter_secure_storage:

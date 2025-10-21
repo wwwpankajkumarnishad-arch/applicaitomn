@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'providers/wallet_provider.dart';
+import 'providers/notifications_provider.dart';
+import 'models/transaction.dart';
+import 'services/mock_api.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // TODO: Initialize Firebase here when configs are available.
   runApp(const MegaPayApp());
 }
 
@@ -15,7 +19,9 @@ class MegaPayApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) =&gt; AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => WalletProvider()..init()),
+        ChangeNotifierProvider(create: (_) => NotificationsProvider()),
       ],
       child: MaterialApp(
         title: 'MegaPay',
@@ -26,16 +32,16 @@ class MegaPayApp extends StatelessWidget {
         ),
         home: const AppHome(),
         routes: {
-          SignInScreen.route: (_) =&gt; const SignInScreen(),
-          SignUpScreen.route: (_) =&gt; const SignUpScreen(),
-          ResetPasswordScreen.route: (_) =&gt; const ResetPasswordScreen(),
-          WalletScreen.route: (_) =&gt; const WalletScreen(),
-          RechargeScreen.route: (_) =&gt; const RechargeScreen(),
-          QrScanPayScreen.route: (_) =&gt; const QrScanPayScreen(),
-          TransactionsScreen.route: (_) =&gt; const TransactionsScreen(),
-          AccountStatementScreen.route: (_) =&gt; const AccountStatementScreen(),
-          NotificationsScreen.route: (_) =&gt; const NotificationsScreen(),
-          ServiceRequestScreen.route: (_) =&gt; const ServiceRequestScreen(),
+          SignInScreen.route: (_) => const SignInScreen(),
+          SignUpScreen.route: (_) => const SignUpScreen(),
+          ResetPasswordScreen.route: (_) => const ResetPasswordScreen(),
+          WalletScreen.route: (_) => const WalletScreen(),
+          RechargeScreen.route: (_) => const RechargeScreen(),
+          QrScanPayScreen.route: (_) => const QrScanPayScreen(),
+          TransactionsScreen.route: (_) => const TransactionsScreen(),
+          AccountStatementScreen.route: (_) => const AccountStatementScreen(),
+          NotificationsScreen.route: (_) => const NotificationsScreen(),
+          ServiceRequestScreen.route: (_) => const ServiceRequestScreen(),
         },
       ),
     );
@@ -46,27 +52,26 @@ class AuthProvider extends ChangeNotifier {
   bool _signedIn = false;
   String? _email;
 
-  bool get signedIn =&gt; _signedIn;
-  String? get email =&gt; _email;
+  bool get signedIn => _signedIn;
+  String? get email => _email;
 
-  Future&lt;void&gt; signIn(String email, String password) async {
-    // TODO: Integrate real auth via Firebase or your backend.
-    await Future.delayed(const Duration(milliseconds: 400));
+  Future<void> signIn(String email, String password) async {
+    final ok = await MockApi.authenticate(email, password);
+    if (!ok) return;
     _email = email;
     _signedIn = true;
     notifyListeners();
   }
 
-  Future&lt;void&gt; signUp(String email, String password) async {
-    // TODO: Integrate sign up
-    await Future.delayed(const Duration(milliseconds: 400));
+  Future<void> signUp(String email, String password) async {
+    final ok = await MockApi.authenticate(email, password);
+    if (!ok) return;
     _email = email;
     _signedIn = true;
     notifyListeners();
   }
 
-  Future&lt;void&gt; resetPassword(String email) async {
-    // TODO: Integrate password reset
+  Future<void> resetPassword(String email) async {
     await Future.delayed(const Duration(milliseconds: 400));
   }
 
@@ -82,7 +87,7 @@ class AppHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final signedIn = context.watch&lt;AuthProvider&gt;().signedIn;
+    final signedIn = context.watch<AuthProvider>().signedIn;
 
     return Scaffold(
       appBar: AppBar(
@@ -92,7 +97,7 @@ class AppHome extends StatelessWidget {
             icon: Icon(signedIn ? Icons.logout : Icons.login),
             onPressed: () {
               if (signedIn) {
-                context.read&lt;AuthProvider&gt;().signOut();
+                context.read<AuthProvider>().signOut();
               } else {
                 Navigator.pushNamed(context, SignInScreen.route);
               }
@@ -108,7 +113,7 @@ class AppHome extends StatelessWidget {
           FeatureTile('Reset Password', ResetPasswordScreen.route, Icons.lock_reset),
           FeatureTile('Wallet Cashload', WalletScreen.route, Icons.account_balance_wallet),
           FeatureTile('Recharge Services', RechargeScreen.route, Icons.bolt),
-          FeatureTile('QR Scan &amp; Pay', QrScanPayScreen.route, Icons.qr_code_scanner),
+          FeatureTile('QR Scan & Pay', QrScanPayScreen.route, Icons.qr_code_scanner),
           FeatureTile('Transaction History', TransactionsScreen.route, Icons.receipt_long),
           FeatureTile('Account Statement', AccountStatementScreen.route, Icons.description_outlined),
           FeatureTile('Push Notification', NotificationsScreen.route, Icons.notifications),
@@ -132,23 +137,23 @@ class FeatureTile extends StatelessWidget {
         leading: Icon(icon),
         title: Text(title),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () =&gt; Navigator.pushNamed(context, route),
+        onTap: () => Navigator.pushNamed(context, route),
       ),
     );
   }
 }
 
-// Screens - placeholders to be expanded
+// Screens
 
 class SignInScreen extends StatefulWidget {
   static const route = '/signin';
   const SignInScreen({super.key});
 
   @override
-  State&lt;SignInScreen&gt; createState() =&gt; _SignInScreenState();
+  State<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _SignInScreenState extends State&lt;SignInScreen&gt; {
+class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
@@ -169,10 +174,10 @@ class _SignInScreenState extends State&lt;SignInScreen&gt; {
               onPressed: _loading
                   ? null
                   : () async {
-                      setState(() =&gt; _loading = true);
-                      await context.read&lt;AuthProvider&gt;().signIn(_emailController.text, _passwordController.text);
+                      setState(() => _loading = true);
+                      await context.read<AuthProvider>().signIn(_emailController.text, _passwordController.text);
                       if (mounted) Navigator.pop(context);
-                      setState(() =&gt; _loading = false);
+                      setState(() => _loading = false);
                     },
               child: _loading ? const CircularProgressIndicator() : const Text('Sign In'),
             ),
@@ -188,10 +193,10 @@ class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  State&lt;SignUpScreen&gt; createState() =&gt; _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends State&lt;SignUpScreen&gt; {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
@@ -212,10 +217,10 @@ class _SignUpScreenState extends State&lt;SignUpScreen&gt; {
               onPressed: _loading
                   ? null
                   : () async {
-                      setState(() =&gt; _loading = true);
-                      await context.read&lt;AuthProvider&gt;().signUp(_emailController.text, _passwordController.text);
+                      setState(() => _loading = true);
+                      await context.read<AuthProvider>().signUp(_emailController.text, _passwordController.text);
                       if (mounted) Navigator.pop(context);
-                      setState(() =&gt; _loading = false);
+                      setState(() => _loading = false);
                     },
               child: _loading ? const CircularProgressIndicator() : const Text('Create Account'),
             ),
@@ -231,10 +236,10 @@ class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  State&lt;ResetPasswordScreen&gt; createState() =&gt; _ResetPasswordScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State&lt;ResetPasswordScreen&gt; {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _emailController = TextEditingController();
   bool _loading = false;
 
@@ -252,10 +257,10 @@ class _ResetPasswordScreenState extends State&lt;ResetPasswordScreen&gt; {
               onPressed: _loading
                   ? null
                   : () async {
-                      setState(() =&gt; _loading = true);
-                      await context.read&lt;AuthProvider&gt;().resetPassword(_emailController.text);
+                      setState(() => _loading = true);
+                      await context.read<AuthProvider>().resetPassword(_emailController.text);
                       if (mounted) Navigator.pop(context);
-                      setState(() =&gt; _loading = false);
+                      setState(() => _loading = false);
                     },
               child: _loading ? const CircularProgressIndicator() : const Text('Send Reset Link'),
             ),
@@ -266,41 +271,201 @@ class _ResetPasswordScreenState extends State&lt;ResetPasswordScreen&gt; {
   }
 }
 
-class WalletScreen extends StatelessWidget {
+class WalletScreen extends StatefulWidget {
   static const route = '/wallet';
   const WalletScreen({super.key});
 
   @override
+  State<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends State<WalletScreen> {
+  final _amountController = TextEditingController(text: '100');
+
+  @override
   Widget build(BuildContext context) {
+    final wallet = context.watch<WalletProvider>();
     return Scaffold(
       appBar: AppBar(title: const Text('Wallet')),
-      body: const Center(child: Text('Wallet cashload and balance view - to implement')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.account_balance_wallet, size: 28),
+                const SizedBox(width: 12),
+                Text('Balance: ₹${wallet.balance.toStringAsFixed(2)}'),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _amountController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(labelText: 'Amount to load'),
+            ),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: () async {
+                final amount = double.tryParse(_amountController.text) ?? 0;
+                if (amount > 0) {
+                  await context.read<WalletProvider>().load(amount);
+                  if (mounted) context.read<NotificationsProvider>().add('Wallet Loaded', '₹${amount.toStringAsFixed(2)} added');
+                }
+              },
+              child: const Text('Load Wallet'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class RechargeScreen extends StatelessWidget {
+class RechargeScreen extends StatefulWidget {
   static const route = '/recharge';
   const RechargeScreen({super.key});
 
   @override
+  State<RechargeScreen> createState() => _RechargeScreenState();
+}
+
+class _RechargeScreenState extends State<RechargeScreen> {
+  String _category = 'Prepaid';
+  String? _operator;
+  final _accountController = TextEditingController();
+  final _amountController = TextEditingController(text: '199');
+  List<String> _operators = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOperators();
+  }
+
+  Future<void> _loadOperators() async {
+    final ops = await MockApi.getOperators(_category);
+    setState(() {
+      _operators = ops;
+      _operator = ops.isNotEmpty ? ops.first : null;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final wallet = context.watch<WalletProvider>();
     return Scaffold(
       appBar: AppBar(title: const Text('Recharge Services')),
-      body: const Center(child: Text('Prepaid/DTH/FASTag recharge flows - to implement')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            DropdownButtonFormField<String>(
+              value: _category,
+              items: const [
+                DropdownMenuItem(value: 'Prepaid', child: Text('Prepaid')),
+                DropdownMenuItem(value: 'DTH', child: Text('DTH')),
+                DropdownMenuItem(value: 'FASTag', child: Text('FASTag')),
+              ],
+              onChanged: (v) {
+                if (v == null) return;
+                setState(() => _category = v);
+                _loadOperators();
+              },
+              decoration: const InputDecoration(labelText: 'Category'),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              value: _operator,
+              items: _operators.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (v) => setState(() => _operator = v),
+              decoration: const InputDecoration(labelText: 'Operator'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _accountController,
+              decoration: const InputDecoration(labelText: 'Mobile/DTH/FASTag number'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _amountController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(labelText: 'Amount'),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () async {
+                final operator = _operator ?? '';
+                final acc = _accountController.text;
+                final amount = double.tryParse(_amountController.text) ?? 0;
+                if (operator.isEmpty || acc.isEmpty || amount <= 0) return;
+                await context.read<WalletProvider>().addRecharge(operator, acc, amount);
+                if (mounted) {
+                  context.read<NotificationsProvider>().add('Recharge Success', '$operator charged ₹${amount.toStringAsFixed(2)}');
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Recharge processed')));
+                }
+              },
+              child: const Text('Proceed Recharge'),
+            ),
+            const SizedBox(height: 16),
+            Text('Current Balance: ₹${wallet.balance.toStringAsFixed(2)}'),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class QrScanPayScreen extends StatelessWidget {
+class QrScanPayScreen extends StatefulWidget {
   static const route = '/qr-scan-pay';
   const QrScanPayScreen({super.key});
 
   @override
+  State<QrScanPayScreen> createState() => _QrScanPayScreenState();
+}
+
+class _QrScanPayScreenState extends State<QrScanPayScreen> {
+  final _descController = TextEditingController(text: 'Payment to Merchant');
+  final _amountController = TextEditingController(text: '50');
+
+  @override
   Widget build(BuildContext context) {
+    final wallet = context.watch<WalletProvider>();
     return Scaffold(
-      appBar: AppBar(title: const Text('QR Scan &amp; Pay')),
-      body: const Center(child: Text('QR scanner and payment - to implement')),
+      appBar: AppBar(title: const Text('QR Scan & Pay')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.account_balance_wallet),
+                const SizedBox(width: 8),
+                Text('Balance: ₹${wallet.balance.toStringAsFixed(2)}'),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextField(controller: _descController, decoration: const InputDecoration(labelText: 'Description')),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _amountController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(labelText: 'Amount'),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () async {
+                final amount = double.tryParse(_amountController.text) ?? 0;
+                final desc = _descController.text;
+                if (amount <= 0 || desc.isEmpty) return;
+                await context.read<WalletProvider>().pay(amount, desc);
+                if (mounted) context.read<NotificationsProvider>().add('Payment Success', 'Paid ₹${amount.toStringAsFixed(2)}');
+              },
+              child: const Text('Pay'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -311,9 +476,22 @@ class TransactionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final txs = context.watch<WalletProvider>().transactions;
     return Scaffold(
       appBar: AppBar(title: const Text('Transaction History')),
-      body: const Center(child: Text('List past transactions - to implement')),
+      body: ListView.builder(
+        itemCount: txs.length,
+        itemBuilder: (_, i) {
+          final t = txs[i];
+          final isDebit = t.amount < 0;
+          return ListTile(
+            leading: Icon(isDebit ? Icons.remove_circle : Icons.add_circle, color: isDebit ? Colors.red : Colors.green),
+            title: Text(t.description),
+            subtitle: Text('${t.type} • ${t.date}'),
+            trailing: Text((isDebit ? '-' : '+') + '₹${t.amount.abs().toStringAsFixed(2)}'),
+          );
+        },
+      ),
     );
   }
 }
@@ -324,9 +502,31 @@ class AccountStatementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final txs = context.watch<WalletProvider>().transactions;
+    final total = txs.fold<double>(0, (sum, t) => sum + t.amount);
     return Scaffold(
       appBar: AppBar(title: const Text('Account Statement')),
-      body: const Center(child: Text('Exportable statement view - to implement')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(children: [const Icon(Icons.summarize), const SizedBox(width: 8), Text('Net total: ₹${total.toStringAsFixed(2)}')]),
+            const SizedBox(height: 12),
+            Expanded(
+              child: ListView.builder(
+                itemCount: txs.length,
+                itemBuilder: (_, i) {
+                  final t = txs[i];
+                  return ListTile(
+                    title: Text('${t.type} - ₹${t.amount.toStringAsFixed(2)}'),
+                    subtitle: Text('${t.description}\n${t.date}'),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -337,22 +537,59 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = context.watch<NotificationsProvider>().items;
     return Scaffold(
       appBar: AppBar(title: const Text('Notifications')),
-      body: const Center(child: Text('Push notification preferences - to implement')),
+      body: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (_, i) {
+          final n = items[i];
+          return ListTile(
+            leading: const Icon(Icons.notifications),
+            title: Text(n.title),
+            subtitle: Text('${n.body}\n${n.date}'),
+          );
+        },
+      ),
     );
   }
 }
 
-class ServiceRequestScreen extends StatelessWidget {
+class ServiceRequestScreen extends StatefulWidget {
   static const route = '/service-request';
   const ServiceRequestScreen({super.key});
+
+  @override
+  State<ServiceRequestScreen> createState() => _ServiceRequestScreenState();
+}
+
+class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
+  final _subjectController = TextEditingController();
+  final _messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Service Request')),
-      body: const Center(child: Text('Raise and track service requests - to implement')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(controller: _subjectController, decoration: const InputDecoration(labelText: 'Subject')),
+            const SizedBox(height: 12),
+            TextField(controller: _messageController, maxLines: 4, decoration: const InputDecoration(labelText: 'Message')),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () {
+                if (_subjectController.text.isEmpty || _messageController.text.isEmpty) return;
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request submitted')));
+                Navigator.pop(context);
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
