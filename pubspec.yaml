@@ -1,0 +1,74 @@
+name: megapay
+description: A fast, secure, and convenient mobile payment solution built with Flutter.
+publish_to: "none"
+
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider:
+
+  # Firebase
+  firebase_core:
+  firebase_messaging:
+  firebase_crashlytics:
+  flutter_local_notifications:
+
+  # Networking and utilities
+  http:
+  intl:
+  package_info_plus:
+  device_info_plus:
+
+  # UI/UX
+  google_fonts:
+  flutter_screenutil:
+  font_awesome_flutter:
+  flutter_slidable:
+  rive:
+
+  # Web and QR
+  webview_flutter:
+  qr_code_scanner:
+  qr_flutter:
+
+  # Payments and UPI (placeholder, integrate per your backend/api)
+  # Add specific packages as needed for your UPI/Recharge providers
+
+  # Security and storage
+  flutter_secure_storage:
+  permission_handler:
+  trust_location:
+
+  # Location
+  geolocator:
+
+  # Validation
+  email_validator:
+
+  # Misc UI helpers
+  marquee:
+  loading_animation_widget:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints:
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  # Configure native splash later once assets are ready
+  # flutter_native_splash:
+  #   color: "#ffffff"
+  #   image: assets/images/splash.png
