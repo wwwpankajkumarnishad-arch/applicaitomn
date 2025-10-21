@@ -11,6 +11,7 @@ import 'widgets/capture_scaffold.dart';
 import 'widgets/section.dart';
 import 'widgets/primary_button.dart';
 import 'theme/app_theme.dart';
+import 'widgets/app_shell.dart'</;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,7 @@ class MegaPayApp extends StatelessWidget {
           return MaterialApp(
             title: 'MegaPay',
             theme: AppTheme.theme(),
-            home: const AppHome(),
+            home: const AppShell(),
             routes: {
               SignInScreen.route: (_) => const SignInScreen(),
               SignUpScreen.route: (_) => const SignUpScreen(),
@@ -214,23 +215,43 @@ class _SignInScreenState extends State<SignInScreen> {
       title: 'Sign In',
       screenName: 'sign_in',
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
-            TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email')),
-            const SizedBox(height: 12),
-            TextField(controller: _passwordController, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _loading
-                  ? null
-                  : () async {
-                      setState(() => _loading = true);
-                      await context.read<AuthProvider>().signIn(_emailController.text, _passwordController.text);
-                      if (mounted) Navigator.pop(context);
-                      setState(() => _loading = false);
-                    },
-              child: _loading ? const CircularProgressIndicator() : const Text('Sign In'),
+            Section(
+              title: 'Welcome back',
+              icon: Icons.lock_open,
+              child: Column(
+                children: [
+                  TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email')),
+                  SizedBox(height: 12.h),
+                  TextField(controller: _passwordController, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
+                  SizedBox(height: 16.h),
+                  PrimaryButton(
+                    label: _loading ? 'Signing In...' : 'Sign In',
+                    icon: Icons.login,
+                    onPressed: _loading
+                        ? null
+                        : () async {
+                            final email = _emailController.text.trim();
+                            final pass = _passwordController.text;
+                            if (email.isEmpty || pass.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter email and password')));
+                              return;
+                            }
+                            setState(() => _loading = true);
+                            await context.read<AuthProvider>().signIn(email, pass);
+                            if (mounted) Navigator.pop(context);
+                            setState(() => _loading = false);
+                          },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 8.h),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, ResetPasswordScreen.route),
+              child: const Text('Forgot password?'),
             ),
           ],
         ),
@@ -258,23 +279,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
       title: 'Sign Up',
       screenName: 'sign_up',
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
-            TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email')),
-            const SizedBox(height: 12),
-            TextField(controller: _passwordController, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _loading
-                  ? null
-                  : () async {
-                      setState(() => _loading = true);
-                      await context.read<AuthProvider>().signUp(_emailController.text, _passwordController.text);
-                      if (mounted) Navigator.pop(context);
-                      setState(() => _loading = false);
-                    },
-              child: _loading ? const CircularProgressIndicator() : const Text('Create Account'),
+            Section(
+              title: 'Create your account',
+              icon: Icons.person_add,
+              child: Column(
+                children: [
+                  TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email')),
+                  SizedBox(height: 12.h),
+                  TextField(controller: _passwordController, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
+                  SizedBox(height: 16.h),
+                  PrimaryButton(
+                    label: _loading ? 'Creating...' : 'Create Account',
+                    icon: Icons.person_add,
+                    onPressed: _loading
+                        ? null
+                        : () async {
+                            final email = _emailController.text.trim();
+                            final pass = _passwordController.text;
+                            if (email.isEmpty || pass.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter email and password')));
+                              return;
+                            }
+                            setState(() => _loading = true);
+                            await context.read<AuthProvider>().signUp(email, pass);
+                            if (mounted) Navigator.pop(context);
+                            setState(() => _loading = false);
+                          },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
