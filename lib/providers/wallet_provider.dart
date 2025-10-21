@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../services/mock_api.dart';
+import '../services/demo_api.dart';
 import '../models/transaction.dart';
 
 class WalletProvider extends ChangeNotifier {
@@ -10,12 +11,12 @@ class WalletProvider extends ChangeNotifier {
   List<TransactionItem> get transactions => List.unmodifiable(_transactions);
 
   Future<void> init() async {
-    _balance = await MockApi.getWalletBalance();
+    _balance = await DemoApiService.getWalletBalance();
     notifyListeners();
   }
 
   Future<void> load(double amount) async {
-    final loaded = await MockApi.loadWallet(amount);
+    final loaded = await DemoApiService.loadWallet(amount);
     _balance += loaded;
     final tx = await MockApi.createTransaction(
       description: 'Wallet load',
@@ -39,7 +40,7 @@ class WalletProvider extends ChangeNotifier {
   }
 
   Future<void> addRecharge(String operator, String accountNumber, double amount) async {
-    final ok = await MockApi.processRecharge(
+    final ok = await DemoApiService.processRecharge(
       operator: operator,
       accountNumber: accountNumber,
       amount: amount,

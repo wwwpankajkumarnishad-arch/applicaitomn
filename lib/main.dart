@@ -7,11 +7,12 @@ import 'providers/wallet_provider.dart';
 import 'providers/notifications_provider.dart';
 import 'models/transaction.dart';
 import 'services/mock_api.dart';
+import 'services/demo_api.dart';
 import 'widgets/capture_scaffold.dart';
 import 'widgets/section.dart';
 import 'widgets/primary_button.dart';
 import 'theme/app_theme.dart';
-import 'widgets/app_shell.dart'</;
+import 'widgets/app_shell.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,7 +65,7 @@ class AuthProvider extends ChangeNotifier {
   String? get email => _email;
 
   Future<void> signIn(String email, String password) async {
-    final ok = await MockApi.authenticate(email, password);
+    final ok = await DemoApiService.login(email, password);
     if (!ok) return;
     _email = email;
     _signedIn = true;
@@ -72,7 +73,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> signUp(String email, String password) async {
-    final ok = await MockApi.authenticate(email, password);
+    final ok = await DemoApiService.login(email, password);
     if (!ok) return;
     _email = email;
     _signedIn = true;
@@ -454,7 +455,7 @@ class _RechargeScreenState extends State<RechargeScreen> {
   }
 
   Future<void> _loadOperators() async {
-    final ops = await MockApi.getOperators(_category);
+    final ops = await DemoApiService.getOperators(_category);
     setState(() {
       _operators = ops;
       _operator = ops.isNotEmpty ? ops.first : null;
