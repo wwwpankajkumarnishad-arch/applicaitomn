@@ -6,6 +6,7 @@ import 'providers/wallet_provider.dart';
 import 'providers/notifications_provider.dart';
 import 'models/transaction.dart';
 import 'services/mock_api.dart';
+import 'widgets/capture_scaffold.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,23 +90,10 @@ class AppHome extends StatelessWidget {
   Widget build(BuildContext context) {
     final signedIn = context.watch<AuthProvider>().signedIn;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('MegaPay'),
-        actions: [
-          IconButton(
-            icon: Icon(signedIn ? Icons.logout : Icons.login),
-            onPressed: () {
-              if (signedIn) {
-                context.read<AuthProvider>().signOut();
-              } else {
-                Navigator.pushNamed(context, SignInScreen.route);
-              }
-            },
-          ),
-        ],
-      ),
-      body: ListView(
+    return CaptureScaffold(
+      title: 'MegaPay',
+      screenName: 'home',
+      child: ListView(
         padding: const EdgeInsets.all(16),
         children: const [
           FeatureTile('User Registration', SignUpScreen.route, Icons.person_add),
@@ -160,9 +148,10 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
-      body: Padding(
+    return CaptureScaffold(
+      title: 'Sign In',
+      screenName: 'sign_in',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -203,9 +192,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
-      body: Padding(
+    return CaptureScaffold(
+      title: 'Sign Up',
+      screenName: 'sign_up',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -245,9 +235,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
-      body: Padding(
+    return CaptureScaffold(
+      title: 'Reset Password',
+      screenName: 'reset_password',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -285,9 +276,10 @@ class _WalletScreenState extends State<WalletScreen> {
   @override
   Widget build(BuildContext context) {
     final wallet = context.watch<WalletProvider>();
-    return Scaffold(
-      appBar: AppBar(title: const Text('Wallet')),
-      body: Padding(
+    return CaptureScaffold(
+      title: 'Wallet',
+      screenName: 'wallet',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -354,9 +346,10 @@ class _RechargeScreenState extends State<RechargeScreen> {
   @override
   Widget build(BuildContext context) {
     final wallet = context.watch<WalletProvider>();
-    return Scaffold(
-      appBar: AppBar(title: const Text('Recharge Services')),
-      body: Padding(
+    return CaptureScaffold(
+      title: 'Recharge Services',
+      screenName: 'recharge',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -431,9 +424,10 @@ class _QrScanPayScreenState extends State<QrScanPayScreen> {
   @override
   Widget build(BuildContext context) {
     final wallet = context.watch<WalletProvider>();
-    return Scaffold(
-      appBar: AppBar(title: const Text('QR Scan & Pay')),
-      body: Padding(
+    return CaptureScaffold(
+      title: 'QR Scan & Pay',
+      screenName: 'qr_scan_pay',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -477,9 +471,10 @@ class TransactionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final txs = context.watch<WalletProvider>().transactions;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Transaction History')),
-      body: ListView.builder(
+    return CaptureScaffold(
+      title: 'Transaction History',
+      screenName: 'transactions',
+      child: ListView.builder(
         itemCount: txs.length,
         itemBuilder: (_, i) {
           final t = txs[i];
@@ -504,9 +499,10 @@ class AccountStatementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final txs = context.watch<WalletProvider>().transactions;
     final total = txs.fold<double>(0, (sum, t) => sum + t.amount);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Account Statement')),
-      body: Padding(
+    return CaptureScaffold(
+      title: 'Account Statement',
+      screenName: 'account_statement',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
@@ -538,9 +534,10 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = context.watch<NotificationsProvider>().items;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Notifications')),
-      body: ListView.builder(
+    return CaptureScaffold(
+      title: 'Notifications',
+      screenName: 'notifications',
+      child: ListView.builder(
         itemCount: items.length,
         itemBuilder: (_, i) {
           final n = items[i];
@@ -569,9 +566,10 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Service Request')),
-      body: Padding(
+    return CaptureScaffold(
+      title: 'Service Request',
+      screenName: 'service_request',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
