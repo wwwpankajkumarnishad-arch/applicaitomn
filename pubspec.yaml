@@ -36,7 +36,6 @@ dependencies:
 
   # Web and QR
   webview_flutter:
-  qr_code_scanner:
   qr_flutter:
 
   # Security and storage
