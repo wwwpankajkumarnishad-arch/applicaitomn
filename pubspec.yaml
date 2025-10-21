@@ -41,7 +41,6 @@ dependencies:
   # Security and storage
   flutter_secure_storage:
   permission_handler:
-  trust_location:
 
   # Location
   geolocator:
