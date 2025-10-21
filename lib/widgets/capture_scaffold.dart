@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/screenshot.dart';
+import '../theme/app_theme.dart';
 
 class CaptureScaffold extends StatefulWidget {
   final String title;
@@ -14,10 +15,10 @@ class CaptureScaffold extends StatefulWidget {
   });
 
   @override
-  State&lt;CaptureScaffold&gt; createState() =&gt; _CaptureScaffoldState();
+  State<CaptureScaffold> createState() => _CaptureScaffoldState();
 }
 
-class _CaptureScaffoldState extends State&lt;CaptureScaffold&gt; {
+class _CaptureScaffoldState extends State<CaptureScaffold> {
   final _boundaryKey = GlobalKey();
   bool _saving = false;
   String? _lastPath;
@@ -25,16 +26,38 @@ class _CaptureScaffoldState extends State&lt;CaptureScaffold&gt; {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: RepaintBoundary(
-        key: _boundaryKey,
-        child: widget.child,
+      appBar: AppBar(
+        title: Text(widget.title),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppTheme.primary, AppTheme.secondary],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFFFFFF), AppTheme.background],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: RepaintBoundary(
+          key: _boundaryKey,
+          child: widget.child,
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _saving
             ? null
             : () async {
-                setState(() =&gt; _saving = true);
+                setState(() => _saving = true);
                 final ts = DateTime.now().toIso8601String().replaceAll(':', '-');
                 final file = await ScreenshotCapturer.saveBoundary(_boundaryKey, '${widget.screenName}_$ts');
                 setState(() {
@@ -45,7 +68,7 @@ class _CaptureScaffoldState extends State&lt;CaptureScaffold&gt; {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      file == null ? 'Failed to save screenshot' : 'Saved: ${file.path}',
+                      file == null ? 'Failed to save screenshot' : 'Saved: ${file!.path}',
                     ),
                   ),
                 );
