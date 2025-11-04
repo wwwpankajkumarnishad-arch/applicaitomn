@@ -1,30 +1,32 @@
 <?php
-// Simple PHP UI for Astrology app using Agora (video/audio/chat)
-// Configure your token server URL (the Node/Express server we created earlier)
-$TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
+require_once __DIR__ . '/config.php';
 ?>
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Astrology Connect (PHP)</title>
+  <title><?php echo h($APP_NAME); ?> - Calls</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="./styles.css" rel="stylesheet">
+  <link rel="icon" href="<?php echo h($APP_FAVICON_URL); ?>">
   <!-- Agora Web SDKs via CDN -->
   <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
   <script src="https://download.agora.io/sdk/release/AgoraRTM.min.js"></script>
 </head>
 <body>
   <header class="header">
-    <div class="container">
-      <h1>Astrology Connect</h1>
-      <p>Consult expert astrologers via chat, audio, or video instantly.</p>
-      <nav style="margin-top:8px">
-        <a href="./feed.php">Feed</a> |
-        <a href="./messages.php">Messages</a> |
-        <a href="./live.php">Live Rooms</a> |
-        <a href="./index.php">Calls</a>
-      </nav>
+    <div class="container" style="display:flex;align-items:center;gap:12px">
+      <img src="<?php echo h($APP_LOGO_URL); ?>" alt="" width="48" height="48" style="border-radius:10px;border:1px solid #2a335a">
+      <div>
+        <h1 style="margin:0"><?php echo h($APP_NAME); ?></h1>
+        <p style="margin:0" class="muted"><?php echo h($APP_TAGLINE); ?></p>
+        <nav style="margin-top:8px">
+          <a href="./feed.php">Feed</a> |
+          <a href="./messages.php">Messages</a> |
+          <a href="./live.php">Live Rooms</a> |
+          <a href="./index.php">Calls</a>
+        </nav>
+      </div>
     </div>
   </header>
 

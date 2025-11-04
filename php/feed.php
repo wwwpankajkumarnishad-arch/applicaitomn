@@ -1,14 +1,15 @@
 <?php
-$TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
+require_once __DIR__ . '/config.php';
 $API = './api.php';
 ?>
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Astrology Social - Feed</title>
+  <title><?php echo h($APP_NAME); ?> - Feed</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="./styles.css" rel="stylesheet">
+  <link rel="icon" href="<?php echo h($APP_FAVICON_URL); ?>">
 </head>
 <body>
   <header class="header">
