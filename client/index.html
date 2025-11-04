@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Astrology Connect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="./styles.css" rel="stylesheet">
+  <!-- Agora Web SDKs via CDN -->
+  <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+  <script src="https://download.agora.io/sdk/release/AgoraRTM.min.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <h1>Astrology Connect</h1>
+      <p>Consult expert astrologers via chat, audio, or video instantly.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Join a Session</h2>
+      <div class="grid">
+        <div class="form">
+          <label>
+            Channel Name
+            <input id="channel" placeholder="e.g., kundli123">
+          </label>
+          <label>
+            Your Name
+            <input id="username" placeholder="e.g., Rahul">
+          </label>
+          <div class="actions">
+            <button id="joinVideo">Join Video</button>
+            <button id="joinAudio">Join Audio</button>
+            <button id="leave">Leave</button>
+          </div>
+          <h3>Chat</h3>
+          <div id="chatBox" class="chat-box"></div>
+          <div class="chat-input">
+            <input id="chatMessage" placeholder="Type a message...">
+            <button id="sendMessage">Send</button>
+          </div>
+        </div>
+
+        <div class="media">
+          <div class="video-area">
+            <div class="video-wrapper">
+              <video id="localVideo" autoplay playsinline muted></video>
+              <span class="label">You</span>
+            </div>
+            <div id="remoteContainer" class="remote-container"></div>
+          </div>
+          <div class="media-actions">
+            <button id="toggleMic">Toggle Mic</button>
+            <button id="toggleCam">Toggle Camera</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Popular Services</h2>
+      <ul class="services">
+        <li>Live Kundli Consultation</li>
+        <li>Match Making</li>
+        <li>Career Guidance</li>
+        <li>Vedic Remedies</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <small>Powered by Agora</small>
+    </div>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
