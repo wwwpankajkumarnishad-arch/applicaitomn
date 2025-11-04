@@ -41,7 +41,7 @@ require_once __DIR__ . '/config.php';
   <?php include __DIR__ . '/footer.php'; ?>
 
   <script>
-    const TOKEN_SERVER_URL = "<?php echo htmlspecialchars($TOKEN_SERVER_URL, ENT_QUOTES, 'UTF-8'); ?>";
+    const TOKEN_SERVER_URL_BASE = "./agora_proxy.php";
     const results = document.getElementById('results');
     const runBtn = document.getElementById('run');
 
@@ -57,7 +57,7 @@ require_once __DIR__ . '/config.php';
 
     async function checkHealth() {
       try {
-        const res = await fetch(`${TOKEN_SERVER_URL}/health`);
+        const res = await fetch(`${TOKEN_SERVER_URL_BASE}?type=health`);
         const data = await res.json();
         addResult('Health', data, true);
       } catch (e) {
@@ -67,7 +67,7 @@ require_once __DIR__ . '/config.php';
 
     async function checkRTM() {
       try {
-        const res = await fetch(`${TOKEN_SERVER_URL}/agora/rtm-token`, {
+        const res = await fetch(`${TOKEN_SERVER_URL_BASE}?type=rtm`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ account: 'diagnostic_user', expireSeconds: 60 })
@@ -81,7 +81,7 @@ require_once __DIR__ . '/config.php';
 
     async function checkRTC() {
       try {
-        const res = await fetch(`${TOKEN_SERVER_URL}/agora/rtc-token`, {
+        const res = await fetch(`${TOKEN_SERVER_URL_BASE}?type=rtc`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ channelName: 'diagnostic_channel', uid: 0, role: 'PUBLISHER', expireSeconds: 60 })

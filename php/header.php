@@ -21,6 +21,8 @@ require_once __DIR__ . '/config.php';
       <a href="./horoscope.php">Horoscope</a>
       <a href="./blog.php">Blog</a>
       <a href="./kundli.php">Kundli</a>
+      <a href="./request.php">Become an Astrologer</a>
+      <a href="./admin.php">Admin</a>
     </nav>
   </div>
 </header>

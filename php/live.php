@@ -59,7 +59,7 @@ require_once __DIR__ . '/config.php';
   <?php include __DIR__ . '/footer.php'; ?>
 
   <script>
-    const TOKEN_SERVER_URL = "<?php echo htmlspecialchars($TOKEN_SERVER_URL, ENT_QUOTES, 'UTF-8'); ?>";
+    const TOKEN_SERVER_URL_BASE = "./agora_proxy.php";
 
     const rtcClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
     let localAudioTrack = null;
@@ -112,7 +112,7 @@ require_once __DIR__ . '/config.php';
     }
 
     async function getRtcToken(channel) {
-      const res = await fetch(TOKEN_SERVER_URL + "/agora/rtc-token", {
+      const res = await fetch(TOKEN_SERVER_URL_BASE + "?type=rtc", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ channelName: channel, uid: 0, role: "PUBLISHER", expireSeconds: 3600 }),
@@ -120,7 +120,7 @@ require_once __DIR__ . '/config.php';
       return res.json();
     }
     async function getRtmToken(account) {
-      const res = await fetch(TOKEN_SERVER_URL + "/agora/rtm-token", {
+      const res = await fetch(TOKEN_SERVER_URL_BASE + "?type=rtm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ account, expireSeconds: 3600 }),

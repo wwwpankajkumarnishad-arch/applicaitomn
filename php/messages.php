@@ -70,7 +70,7 @@ require_once __DIR__ . '/config.php';
   <?php include __DIR__ . '/footer.php'; ?>
 
   <script>
-    const TOKEN_SERVER_URL = "<?php echo htmlspecialchars($TOKEN_SERVER_URL, ENT_QUOTES, 'UTF-8'); ?>";
+    const TOKEN_SERVER_URL_BASE = "./agora_proxy.php";
 
     let rtmClient = null;
     let rtmChannel = null;
@@ -111,7 +111,7 @@ require_once __DIR__ . '/config.php';
     }
 
     async function getRtmToken(account) {
-      const res = await fetch(TOKEN_SERVER_URL + "/agora/rtm-token", {
+      const res = await fetch(TOKEN_SERVER_URL_BASE + "?type=rtm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ account, expireSeconds: 3600 }),

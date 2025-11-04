@@ -32,6 +32,7 @@ $slots = load_json('slots', []);             // astrologerId -> [ {slotId, start
 $bookings = load_json('bookings', []);       // id -> booking
 $reviews = load_json('reviews', []);         // astrologerId -> [ {user, rating, text, createdAt}, ... ]
 $wallets = load_json('wallets', []);         // username -> balance (int/float)
+$requests = load_json('astro_requests', []); // id -> request
 
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
@@ -182,6 +183,16 @@ if ($action === 'get_astrologer') {
   if ($id === '' || !isset($astrologers[$id])) json_err('astrologer not found');
   json_ok($astrologers[$id]);
 }
+if ($action === 'delete_astrologer') {
+  $id = trim($_POST['id'] ?? '');
+  if ($id === '' || !isset($astrologers[$id])) json_err('astrologer not found');
+  unset($astrologers[$id]);
+  save_json('astrologers', $astrologers);
+  // cleanup slots
+  unset($slots[$id]);
+  save_json('slots', $slots);
+  json_ok(['deleted' => $id]);
+}
 
 /* -------------------- Slots -------------------- */
 if ($action === 'add_slot') {
@@ -315,6 +326,66 @@ if ($action === 'list_reviews') {
   $list = array_values($reviews[$astrologerId] ?? []);
   usort($list, fn($a,$b) => $b['createdAt'] <=> $a['createdAt']);
   json_ok($list);
+}
+
+/* -------------------- Admin: Astrologer Requests -------------------- */
+if ($action === 'create_astrologer_request') {
+  $id = uniqid('r_');
+  $name = trim($_POST['name'] ?? '');
+  $bio = trim($_POST['bio'] ?? '');
+  $avatar = trim($_POST['avatar'] ?? '');
+  $skills = trim($_POST['skills'] ?? '');
+  $ratePerMin = floatval($_POST['ratePerMin'] ?? 0);
+  $contact = trim($_POST['contact'] ?? '');
+  if ($name === '' || $contact === '') json_err('name and contact required');
+  $requests[$id] = [
+    'id' => $id,
+    'name' => $name,
+    'bio' => $bio,
+    'avatar' => $avatar,
+    'skills' => array_values(array_filter(array_map('trim', explode(',', $skills)), fn($s)=>$s!=='')),
+    'ratePerMin' => $ratePerMin,
+    'contact' => $contact,
+    'status' => 'pending',
+    'createdAt' => time(),
+  ];
+  save_json('astro_requests', $requests);
+  json_ok($requests[$id]);
+}
+if ($action === 'list_requests') {
+  $list = array_values($requests);
+  usort($list, fn($a,$b) => $b['createdAt'] <=> $a['createdAt']);
+  json_ok($list);
+}
+if ($action === 'approve_request') {
+  $id = trim($_POST['id'] ?? '');
+  if ($id === '' || !isset($requests[$id])) json_err('request not found');
+  $r = $requests[$id];
+  // create astrologer
+  $aid = uniqid('a_');
+  $astrologers[$aid] = [
+    'id' => $aid,
+    'name' => $r['name'],
+    'bio' => $r['bio'],
+    'avatar' => $r['avatar'],
+    'skills' => $r['skills'],
+    'ratePerMin' => $r['ratePerMin'],
+    'rating' => 4.8,
+    'reviewsCount' => 0,
+  ];
+  save_json('astrologers', $astrologers);
+  $requests[$id]['status'] = 'approved';
+  save_json('astro_requests', $requests);
+  json_ok(['approved' => $id, 'astrologerId' => $aid]);
+}
+if ($action === 'reject_request') {
+  $id = trim($_POST['id'] ?? '');
+  $reason = trim($_POST['reason'] ?? '');
+  if ($id === '' || !isset($requests[$id])) json_err('request not found');
+  $requests[$id]['status'] = 'rejected';
+  $requests[$id]['reason'] = $reason;
+  save_json('astro_requests', $requests);
+  json_ok(['rejected' => $id]);
 }
 
 /* -------------------- Timed Chat Sessions -------------------- */
