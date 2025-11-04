@@ -41,8 +41,8 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
             <button id="leave">Leave</button>
           </div>
           <h3>Room Chat</h3>
-          <div id="chatBox" class="chat-box"></div>
-          <div class="chat-input">
+          <div id="chatBox" class="chat-thread"></div>
+          <div class="chat-input-bar">
             <input id="chatMessage" placeholder="Type a message...">
             <button id="sendMessage">Send</button>
           </div>
@@ -94,10 +94,21 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       toggleCam: document.getElementById("toggleCam"),
     };
 
-    function addChat(sender, text) {
-      const p = document.createElement("p");
-      p.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      els.chatBox.appendChild(p);
+    function addBubble(sender, text, isMe=false) {
+      const wrap = document.createElement('div');
+      wrap.className = 'bubble-wrap ' + (isMe ? 'me' : 'them');
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      wrap.appendChild(bubble);
+      wrap.appendChild(meta);
+      els.chatBox.appendChild(wrap);
       els.chatBox.scrollTop = els.chatBox.scrollHeight;
     }
 
@@ -136,8 +147,8 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       }
       rtmChannel = rtmClient.createChannel(channel);
       await rtmChannel.join();
-      rtmChannel.on("ChannelMessage", ({ text }, senderId) => addChat(senderId, text));
-      addChat("System", `Joined chat ${channel}`);
+      rtmChannel.on("ChannelMessage", ({ text }, senderId) => addBubble(senderId, text, senderId === username));
+      addBubble("System", `Joined chat ${channel}`);
     }
     async function leaveChat() {
       if (rtmChannel) { await rtmChannel.leave(); rtmChannel = null; }
@@ -216,7 +227,7 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       els.remoteContainer.innerHTML = "";
       els.localVideo.srcObject = null;
       joined = false;
-      addChat("System", "Left room");
+      addBubble("System", "Left room");
     };
 
     let micEnabled = true;
@@ -240,7 +251,7 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       const username = els.username.value.trim();
       if (!text || !rtmChannel) return;
       await rtmChannel.sendMessage({ text });
-      addChat(username, text);
+      addBubble(username, text, true);
       els.chatMessage.value = "";
     };
   </script>

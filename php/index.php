@@ -19,6 +19,12 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
     <div class="container">
       <h1>Astrology Connect</h1>
       <p>Consult expert astrologers via chat, audio, or video instantly.</p>
+      <nav style="margin-top:8px">
+        <a href="./feed.php">Feed</a> |
+        <a href="./messages.php">Messages</a> |
+        <a href="./live.php">Live Rooms</a> |
+        <a href="./index.php">Calls</a>
+      </nav>
     </div>
   </header>
 
@@ -41,8 +47,8 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
             <button id="leave">Leave</button>
           </div>
           <h3>Chat</h3>
-          <div id="chatBox" class="chat-box"></div>
-          <div class="chat-input">
+          <div id="chatBox" class="chat-thread"></div>
+          <div class="chat-input-bar">
             <input id="chatMessage" placeholder="Type a message...">
             <button id="sendMessage">Send</button>
           </div>
@@ -107,10 +113,21 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       toggleCam: document.getElementById("toggleCam"),
     };
 
-    function addChat(sender, text) {
-      const p = document.createElement("p");
-      p.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      els.chatBox.appendChild(p);
+    function addBubble(sender, text, isMe=false) {
+      const wrap = document.createElement('div');
+      wrap.className = 'bubble-wrap ' + (isMe ? 'me' : 'them');
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      wrap.appendChild(bubble);
+      wrap.appendChild(meta);
+      els.chatBox.appendChild(wrap);
       els.chatBox.scrollTop = els.chatBox.scrollHeight;
     }
 
@@ -156,9 +173,9 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       rtmChannel = rtmClient.createChannel(channel);
       await rtmChannel.join();
       rtmChannel.on("ChannelMessage", ({ text }, senderId) => {
-        addChat(senderId, text);
+        addBubble(senderId, text, senderId === username);
       });
-      addChat("System", `Joined chat channel ${channel}`);
+      addBubble("System", `Joined chat channel ${channel}`);
     }
 
     // Leave RTM
@@ -266,7 +283,7 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       els.remoteContainer.innerHTML = "";
       els.localVideo.srcObject = null;
       joined = false;
-      addChat("System", "Left session");
+      addBubble("System", "Left session");
     };
 
     // Send chat message
@@ -275,7 +292,7 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       const username = els.username.value.trim();
       if (!text || !rtmChannel) return;
       await rtmChannel.sendMessage({ text });
-      addChat(username, text);
+      addBubble(username, text, true);
       els.chatMessage.value = "";
     };
 
