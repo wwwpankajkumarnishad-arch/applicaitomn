@@ -317,4 +317,79 @@ if ($action === 'list_reviews') {
   json_ok($list);
 }
 
+/* -------------------- Timed Chat Sessions -------------------- */
+$chatSessions = load_json('chat_sessions', []); // id -> session
+
+if ($action === 'start_chat_session') {
+  $username = trim($_POST['username'] ?? '');
+  $astrologerId = trim($_POST['astrologerId'] ?? '');
+  if ($username === '' || $astrologerId === '') json_err('invalid');
+  if (!isset($users[$username])) json_err('user not found');
+  if (!isset($astrologers[$astrologerId])) json_err('astrologer not found');
+
+  $rate = floatval($astrologers[$astrologerId]['ratePerMin'] ?? 0);
+  if ($rate <= 0) json_err('astrologer not available for chat');
+
+  $balance = floatval($wallets[$username] ?? 0);
+  if ($balance < ($rate * 1)) json_err('insufficient wallet for at least 1 minute');
+
+  $id = uniqid('cs_');
+  $session = [
+    'id' => $id,
+    'username' => $username,
+    'astrologerId' => $astrologerId,
+    'ratePerMin' => $rate,
+    'start' => time(),
+    'end' => null,
+    'status' => 'active',
+    'channel' => "chat_$id",
+    'charged' => 0,
+  ];
+  $chatSessions[$id] = $session;
+  save_json('chat_sessions', $chatSessions);
+  json_ok($session);
+}
+
+if ($action === 'session_status') {
+  $id = trim($_GET['id'] ?? '');
+  if ($id === '' || !isset($chatSessions[$id])) json_err('session not found');
+  $s = $chatSessions[$id];
+  $elapsedSec = ($s['end'] ?? time()) - $s['start'];
+  if ($s['status'] === 'ended') {
+    $remainingSec = 0;
+  } else {
+    $balance = floatval($wallets[$s['username']] ?? 0);
+    // Remaining seconds based on current balance and rate
+    $affordableSec = floor(($balance) / max($s['ratePerMin'], 0.0001) * 60);
+    $remainingSec = max(0, $affordableSec - $elapsedSec);
+  }
+  json_ok(['elapsedSec' => $elapsedSec, 'remainingSec' => $remainingSec, 'status' => $s['status'], 'channel' => $s['channel']]);
+}
+
+if ($action === 'end_chat_session') {
+  $id = trim($_POST['id'] ?? '');
+  $username = trim($_POST['username'] ?? '');
+  if ($id === '' || $username === '') json_err('invalid');
+  if (!isset($chatSessions[$id])) json_err('session not found');
+  $s = $chatSessions[$id];
+  if ($s['username'] !== $username) json_err('not owner');
+  if ($s['status'] !== 'active') json_err('already ended');
+
+  $s['end'] = time();
+  $elapsedMin = ceil(max(0, $s['end'] - $s['start']) / 60);
+  $cost = $elapsedMin * floatval($s['ratePerMin']);
+  $balance = floatval($wallets[$username] ?? 0);
+  $charged = min($balance, $cost);
+  $wallets[$username] = $balance - $charged;
+  save_json('wallets', $wallets);
+
+  $s['status'] = 'ended';
+  $s['charged'] = $charged;
+  $chatSessions[$id] = $s;
+  save_json('chat_sessions', $chatSessions);
+  json_ok($s);
+}
+
+json_err('unknown action');
+
 json_err('unknown action');

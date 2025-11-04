@@ -79,14 +79,37 @@ $id = $_GET['id'] ?? '';
       els.profile.innerHTML = `
         <div style="display:flex;gap:12px;align-items:center">
           <img src="${a.avatar || 'https://placehold.co/80x80'}" width="80" height="80" style="border-radius:14px;border:1px solid #e6e8ef">
-          <div>
+          <div style="flex:1">
             <div class="title">${a.name}</div>
             <div class="muted">${a.bio}</div>
             <div class="muted">Skills: ${a.skills.join(', ')}</div>
             <div class="muted">⭐ ${a.rating} • ${a.reviewsCount} reviews • ₹${a.ratePerMin}/min</div>
           </div>
+          <div class="actions">
+            <button class="astro-btn astro-btn-primary" id="startPaidChat">Start Paid Chat</button>
+          </div>
         </div>
       `;
+
+      document.getElementById('startPaidChat').onclick = async () => {
+        const username = prompt('Your username (must exist with wallet balance):');
+        if (!username) return;
+        try {
+          // ensure user exists
+          await api('upsert_user', { username });
+          const session = await api('start_chat_session', { username, astrologerId });
+          // redirect to messages page with session info
+          const params = new URLSearchParams({
+            sessionId: session.id,
+            channel: session.channel,
+            me: username,
+            to: a.name,
+          });
+          window.location.href = './messages.php?' + params.toString();
+        } catch (e) {
+          alert(e.message);
+        }
+      };
     }
 
     function renderSlots(list) {

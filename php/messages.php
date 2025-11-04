@@ -36,6 +36,14 @@ require_once __DIR__ . '/config.php';
           <button id="leaveDM">Leave</button>
         </div>
         <p class="muted" style="margin-top:10px">Tip: Share the same usernames on another device to join the same DM room.</p>
+
+        <div class="card" id="paidInfo" style="margin-top:12px; display:none">
+          <div class="title-sm">Paid Session</div>
+          <div class="muted">Remaining: <span id="remainingTime">--:--</span></div>
+          <div class="actions" style="margin-top:8px">
+            <button id="endSession">End Session</button>
+          </div>
+        </div>
       </div>
 
       <div class="chat-main">
@@ -79,6 +87,9 @@ require_once __DIR__ . '/config.php';
       chatAvatar: document.getElementById('chatAvatar'),
       meAvatar: document.getElementById('meAvatar'),
       toAvatar: document.getElementById('toAvatar'),
+      paidInfo: document.getElementById('paidInfo'),
+      remainingTime: document.getElementById('remainingTime'),
+      endSession: document.getElementById('endSession'),
     };
 
     function addBubble(sender, text, isMe=false) {
@@ -108,26 +119,84 @@ require_once __DIR__ . '/config.php';
       return res.json();
     }
 
+    // Paid session support via URL params
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('sessionId') || '';
+    const presetChannel = params.get('channel') || '';
+    const presetMe = params.get('me') || '';
+    const presetTo = params.get('to') || '';
+
+    let statusTimer = null;
+
+    async function joinChannel(channelName, me) {
+      const { token, appId } = await getRtmToken(me);
+      rtmClient = AgoraRTM.createInstance(appId);
+      await rtmClient.login({ token, uid: me });
+      rtmChannel = rtmClient.createChannel(channelName);
+      await rtmChannel.join();
+      rtmChannel.on("ChannelMessage", ({ text }, senderId) => addBubble(senderId, text, senderId === me));
+      els.chatStatus.textContent = `Connected to ${channelName}`;
+      addBubble('System', `Joined channel ${channelName}`);
+      els.chatAvatar.src = 'https://placehold.co/44x44';
+      els.meAvatar.src = 'https://placehold.co/48x48';
+      els.toAvatar.src = 'https://placehold.co/40x40';
+    }
+
+    async function pollSession() {
+      if (!sessionId) return;
+      try {
+        const res = await fetch('./api.php?action=session_status&id=' + encodeURIComponent(sessionId));
+        const data = await res.json();
+        if (!data.ok) return;
+        const s = data.data;
+        const rem = Math.max(0, s.remainingSec|0);
+        const m = Math.floor(rem / 60);
+        const sec = rem % 60;
+        els.remainingTime.textContent = String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+        els.paidInfo.style.display = 'block';
+        if (rem <= 0 || s.status !== 'active') {
+          // auto end
+          clearInterval(statusTimer);
+          addBubble('System', 'Session time ended');
+          if (rtmChannel) { await rtmChannel.leave(); rtmChannel = null; }
+          if (rtmClient) { await rtmClient.logout(); rtmClient = null; }
+          els.chatStatus.textContent = 'Ended';
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    if (sessionId && presetChannel && presetMe && presetTo) {
+      // prefill and disable inputs
+      els.me.value = presetMe;
+      els.to.value = presetTo;
+      els.me.disabled = true;
+      els.to.disabled = true;
+      els.startDM.disabled = true;
+      // join paid channel
+      joinChannel(presetChannel, presetMe).then(() => {
+        statusTimer = setInterval(pollSession, 2000);
+      });
+      els.endSession.onclick = async () => {
+        try {
+          const body = new URLSearchParams({ action:'end_chat_session', id: sessionId, username: presetMe });
+          const res = await fetch('./api.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
+          const data = await res.json();
+          if (data.ok) {
+            addBubble('System', 'Session ended. Charged ₹' + data.data.charged);
+          }
+        } catch (e) {}
+        pollSession();
+      };
+    }
+
+    // Default DM flow
     els.startDM.onclick = async () => {
       const me = els.me.value.trim();
       const to = els.to.value.trim();
       if (!me || !to) return alert('Usernames required');
 
       const channelName = `dm_${[me, to].sort().join('_')}`;
-      const { token, appId } = await getRtmToken(me);
-      rtmClient = AgoraRTM.createInstance(appId);
-      await rtmClient.login({ token, uid: me });
-      rtmChannel = rtmClient.createChannel(channelName);
-      await rtmChannel.join();
-      rtmChannel.on("ChannelMessage", ({ text }, senderId) => addBubble(senderId, text, senderId === me ? true : false));
-
-      els.chatStatus.textContent = `Connected to ${channelName}`;
-      addBubble('System', `Joined DM channel ${channelName}`);
-
-      // avatars preview (placeholder logic)
-      els.chatAvatar.src = 'https://placehold.co/44x44';
-      els.meAvatar.src = 'https://placehold.co/48x48';
-      els.toAvatar.src = 'https://placehold.co/40x40';
+      await joinChannel(channelName, me);
     };
 
     els.leaveDM.onclick = async () => {
@@ -135,6 +204,7 @@ require_once __DIR__ . '/config.php';
       if (rtmClient) { await rtmClient.logout(); rtmClient = null; }
       els.chatStatus.textContent = 'Not connected';
       addBubble('System', 'Left DM');
+      if (statusTimer) { clearInterval(statusTimer); statusTimer = null; }
     };
 
     els.send.onclick = async () => {
