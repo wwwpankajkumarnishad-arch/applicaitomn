@@ -24,28 +24,45 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
   </header>
 
   <main class="container">
-    <section class="card">
-      <h2>Start a DM</h2>
-      <div class="grid">
-        <div class="form">
-          <label>Your Username
+    <section class="card chat-shell">
+      <div class="chat-sidebar">
+        <div class="chat-profile">
+          <img id="meAvatar" src="https://placehold.co/48x48" alt="" class="avatar">
+          <div>
+            <div class="title-sm">Your Username</div>
             <input id="me" placeholder="e.g., rahul">
-          </label>
-          <label>Recipient Username
-            <input id="to" placeholder="e.g., sita">
-          </label>
-          <div class="actions">
-            <button id="startDM">Start DM</button>
-            <button id="leaveDM">Leave</button>
           </div>
         </div>
-        <div>
-          <h3>Messages</h3>
-          <div id="log" class="chat-box"></div>
-          <div class="chat-input">
-            <input id="msg" placeholder="Type a message">
-            <button id="send">Send</button>
+        <div class="chat-target">
+          <img id="toAvatar" src="https://placehold.co/40x40" alt="" class="avatar sm">
+          <div style="flex:1">
+            <div class="title-sm">Recipient</div>
+            <input id="to" placeholder="e.g., sita">
           </div>
+        </div>
+        <div class="actions">
+          <button id="startDM">Start Chat</button>
+          <button id="leaveDM">Leave</button>
+        </div>
+        <p class="muted" style="margin-top:10px">Tip: Share the same usernames on another device to join the same DM room.</p>
+      </div>
+
+      <div class="chat-main">
+        <div class="chat-header">
+          <div class="chat-title">
+            <img id="chatAvatar" src="https://placehold.co/44x44" class="avatar">
+            <div>
+              <div class="title">Chat</div>
+              <div id="chatStatus" class="muted">Not connected</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="log" class="chat-thread"></div>
+
+        <div class="chat-input-bar">
+          <input id="msg" placeholder="Type a message">
+          <button id="send">Send</button>
         </div>
       </div>
     </section>
@@ -69,12 +86,27 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       log: document.getElementById('log'),
       msg: document.getElementById('msg'),
       send: document.getElementById('send'),
+      chatStatus: document.getElementById('chatStatus'),
+      chatAvatar: document.getElementById('chatAvatar'),
+      meAvatar: document.getElementById('meAvatar'),
+      toAvatar: document.getElementById('toAvatar'),
     };
 
-    function addLog(sender, text) {
-      const p = document.createElement('p');
-      p.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      els.log.appendChild(p);
+    function addBubble(sender, text, isMe=false) {
+      const wrap = document.createElement('div');
+      wrap.className = 'bubble-wrap ' + (isMe ? 'me' : 'them');
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      wrap.appendChild(bubble);
+      wrap.appendChild(meta);
+      els.log.appendChild(wrap);
       els.log.scrollTop = els.log.scrollHeight;
     }
 
@@ -91,21 +123,29 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       const me = els.me.value.trim();
       const to = els.to.value.trim();
       if (!me || !to) return alert('Usernames required');
-      const channelName = `dm_${[me, to].sort().join('_')}`;
 
+      const channelName = `dm_${[me, to].sort().join('_')}`;
       const { token, appId } = await getRtmToken(me);
       rtmClient = AgoraRTM.createInstance(appId);
       await rtmClient.login({ token, uid: me });
       rtmChannel = rtmClient.createChannel(channelName);
       await rtmChannel.join();
-      rtmChannel.on("ChannelMessage", ({ text }, senderId) => addLog(senderId, text));
-      addLog('System', `Joined DM channel ${channelName}`);
+      rtmChannel.on("ChannelMessage", ({ text }, senderId) => addBubble(senderId, text, senderId === me ? true : false));
+
+      els.chatStatus.textContent = `Connected to ${channelName}`;
+      addBubble('System', `Joined DM channel ${channelName}`);
+
+      // avatars preview (placeholder logic)
+      els.chatAvatar.src = 'https://placehold.co/44x44';
+      els.meAvatar.src = 'https://placehold.co/48x48';
+      els.toAvatar.src = 'https://placehold.co/40x40';
     };
 
     els.leaveDM.onclick = async () => {
       if (rtmChannel) { await rtmChannel.leave(); rtmChannel = null; }
       if (rtmClient) { await rtmClient.logout(); rtmClient = null; }
-      addLog('System', 'Left DM');
+      els.chatStatus.textContent = 'Not connected';
+      addBubble('System', 'Left DM');
     };
 
     els.send.onclick = async () => {
@@ -113,7 +153,7 @@ $TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
       const me = els.me.value.trim();
       if (!text || !rtmChannel) return;
       await rtmChannel.sendMessage({ text });
-      addLog(me, text);
+      addBubble(me, text, true);
       els.msg.value = '';
     };
   </script>
