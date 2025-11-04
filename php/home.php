@@ -33,104 +33,59 @@ $API = './api.php';
     </div>
   </header>
 
-  <main class="container">
-    <!-- Hero -->
-    <section class="astro-hero">
-      <div class="astro-hero-content">
-        <h1>Talk to India’s Top Astrologers</h1>
-        <p>Instant chat and call. Authentic guidance on love, career, finance, and health.</p>
-        <div class="astro-hero-actions">
-          <a href="./astrologers.php"><button class="astro-btn astro-btn-primary">Consult Now</button></a>
-          <a href="./live.php"><button class="astro-btn">Join Live</button></a>
-        </div>
-      </div>
-      <div class="astro-hero-illustration"></div>
-    </section>
-
-    <!-- Categories -->
-    <section class="astro-section">
-      <h2 class="astro-section-title">Services</h2>
-      <div class="astro-categories">
-        <div class="astro-category-card">
-          <div class="astro-category-icon">🔯</div>
-          <div class="astro-category-name">Kundli</div>
-        </div>
-        <div class="astro-category-card">
-          <div class="astro-category-icon">💞</div>
-          <div class="astro-category-name">Matchmaking</div>
-        </div>
-        <div class="astro-category-card">
-          <div class="astro-category-icon">💼</div>
-          <div class="astro-category-name">Career</div>
-        </div>
-        <div class="astro-category-card">
-          <div class="astro-category-icon">💰</div>
-          <div class="astro-category-name">Finance</div>
-        </div>
-        <div class="astro-category-card">
-          <div class="astro-category-icon">🕉️</div>
-          <div class="astro-category-name">Vedic Remedies</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Top Astrologers -->
-    <section class="astro-section">
-      <div class="astro-section-head">
-        <h2 class="astro-section-title">Top Astrologers</h2>
-        <div class="astro-filters">
-          <button class="astro-chip active" data-sort="rating">Top Rated</button>
-          <button class="astro-chip" data-sort="price">Best Value</button>
-          <button class="astro-chip" data-sort="name">A–Z</button>
-        </div>
-      </div>
-      <div id="astroGrid" class="astro-grid"></div>
-    </section>
-
-    <!-- Why Us -->
-    <section class="astro-section">
-      <h2 class="astro-section-title">Why Choose Us</h2>
-      <div class="astro-why">
-        <div class="astro-why-card">
-          <div class="astro-why-icon">✅</div>
-          <div>
-            <div class="astro-why-title">Verified Experts</div>
-            <div class="astro-why-desc">Profiles vetted for authenticity and experience.</div>
-          </div>
-        </div>
-        <div class="astro-why-card">
-          <div class="astro-why-icon">⚡</div>
-          <div>
-            <div class="astro-why-title">Instant Connect</div>
-            <div class="astro-why-desc">Chat or call in seconds, anytime.</div>
-          </div>
-        </div>
-        <div class="astro-why-card">
-          <div class="astro-why-icon">🔒</div>
-          <div>
-            <div class="astro-why-title">Secure & Private</div>
-            <div class="astro-why-desc">Protected sessions with safe payments.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="astro-footer">
-    <div class="container astro-footer-inner">
-      <div>© <?php echo date('Y'); ?> <?php echo h($APP_NAME); ?></div>
-      <div class="astro-footer-links">
-        <a href="./home.php">Home</a>
-        <a href="./astrologers.php">Astrologers</a>
-        <a href="./wallet.php">Wallet</a>
+  <main class="mobile-container">
+    <div class="mobile-header">
+      <div class="mobile-greeting">Hi, User 👋</div>
+      <div class="mobile-actions">
+        <div class="icon">🔔</div>
+        <img src="<?php echo h($APP_LOGO_URL); ?>" class="mobile-avatar" alt="">
       </div>
     </div>
-  </footer>
+
+    <div class="search-bar">
+      <span>🔎</span>
+      <input id="search" placeholder="Search">
+      <span class="mic">🎙️</span>
+    </div>
+
+    <div class="quick-cats">
+      <div class="quick-cat">🪐</div>
+      <div class="quick-cat">📜</div>
+      <div class="quick-cat">💖</div>
+      <div class="quick-cat">💬</div>
+    </div>
+
+    <div class="banner">
+      <div>
+        <div class="title-sm">Talk to astrologer for free</div>
+        <div class="text">Let's open up the thing that matters among the people</div>
+      </div>
+      <button class="cta" onclick="location.href='./messages.php'">Chat Now</button>
+    </div>
+
+    <div class="section-title">Services</div>
+    <div class="tiles">
+      <div class="tile"><div class="icon">🌟</div><div class="label">Daily Horoscope</div></div>
+      <div class="tile"><div class="icon">📘</div><div class="label">Free Kundli</div></div>
+      <div class="tile"><div class="icon">🐦</div><div class="label">Kundli Matching</div></div>
+      <div class="tile"><div class="icon">💬</div><div class="label">Free Chat</div></div>
+    </div>
+
+    <div class="section-title">Astrologers</div>
+    <div id="astroRow" class="astro-cards-row"></div>
+  </main>
+
+  <div class="tabbar">
+    <div class="tab active" onclick="location.href='./home.php'"><div class="icon">🏠</div><div>Home</div></div>
+    <div class="tab" onclick="location.href='./messages.php'"><div class="icon">💬</div><div>Chat</div></div>
+    <div class="tab" onclick="location.href='./live.php'"><div class="icon">📺</div><div>Live</div></div>
+    <div class="tab" onclick="location.href='./index.php'"><div class="icon">📞</div><div>Call</div></div>
+    <div class="tab" onclick="location.href='./profile.php'"><div class="icon">👤</div><div>Profile</div></div>
+  </div>
 
   <script>
     const API = "<?php echo h($API); ?>";
-    const grid = document.getElementById('astroGrid');
-    const chips = document.querySelectorAll('.astro-chip');
+    const row = document.getElementById('astroRow');
 
     async function api(action, payload={}, method='POST') {
       const opts = { method, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } };
@@ -144,45 +99,30 @@ $API = './api.php';
     }
 
     function renderAstrologers(items) {
-      grid.innerHTML = '';
+      row.innerHTML = '';
       items.forEach(a => {
         const card = document.createElement('div');
-        card.className = 'astro-card';
+        card.className = 'astro-card small';
         card.innerHTML = `
           <img src="${a.avatar || 'https://placehold.co/96x96'}" class="astro-card-avatar">
           <div class="astro-card-info">
             <div class="astro-card-name">${a.name}</div>
             <div class="astro-card-meta">⭐ ${a.rating} • ₹${a.ratePerMin}/min</div>
-            <div class="astro-card-skills">${a.skills.join(', ')}</div>
             <div class="astro-card-actions">
-              <a href="./astrologer.php?id=${a.id}"><button class="astro-btn astro-btn-primary sm">View Profile</button></a>
-              <a href="./messages.php"><button class="astro-btn sm">Chat</button></a>
-              <a href="./index.php"><button class="astro-btn sm">Call</button></a>
+              <a href="./astrologer.php?id=${a.id}"><button class="astro-btn astro-btn-primary sm">View</button></a>
             </div>
           </div>
         `;
-        grid.appendChild(card);
+        row.appendChild(card);
       });
     }
 
-    async function load(sort='rating') {
+    async function load() {
       try {
         const items = await api('list_astrologers', {}, 'GET');
-        let sorted = items.slice();
-        if (sort === 'rating') sorted.sort((a,b)=> (b.rating||0) - (a.rating||0));
-        if (sort === 'price') sorted.sort((a,b)=> (a.ratePerMin||0) - (b.ratePerMin||0));
-        if (sort === 'name') sorted.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
-        renderAstrologers(sorted);
+        renderAstrologers(items.slice(0, 10));
       } catch (e) { console.log(e); }
     }
-
-    chips.forEach(chip => {
-      chip.onclick = () => {
-        chips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        load(chip.dataset.sort);
-      };
-    });
 
     load();
   </script>
