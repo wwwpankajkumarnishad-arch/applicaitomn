@@ -1,16 +1,19 @@
 <?php
 // Central config and asset references for the project
 
-// Token server URL for Agora RTM/RTC (fallback to localhost for dev)
-$TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'http://localhost:4000';
+// Base URL of your live site
+$BASE_URL = getenv('BASE_URL') ?: 'https://ecodroids.com';
+
+// Token server URL for Agora RTM/RTC (points to your live domain by default)
+$TOKEN_SERVER_URL = getenv('TOKEN_SERVER_URL') ?: 'https://ecodroids.com';
 
 // Branding
 $APP_NAME = 'Astrology Social';
 $APP_TAGLINE = 'Consult, connect, and go live with astrologers.';
 
 // External assets (use your own hosted URLs in production)
-$APP_LOGO_URL = 'https://placehold.co/64x64?text=AS';
-$APP_FAVICON_URL = 'https://placehold.co/32x32?text=AS';
+$APP_LOGO_URL = getenv('APP_LOGO_URL') ?: 'https://placehold.co/64x64?text=AS';
+$APP_FAVICON_URL = getenv('APP_FAVICON_URL') ?: 'https://placehold.co/32x32?text=AS';
 
 // Social icons (placeholders)
 $ICON_CALL = 'https://img.icons8.com/ios-filled/50/ffffff/phone.png';
