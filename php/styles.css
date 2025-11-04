@@ -375,3 +375,114 @@ video {
     grid-template-columns: 1fr;
   }
 }
+
+/* AstroTalk-like light theme components */
+.theme-astro {
+  background: #f7f8fc;
+  color: #1a2234;
+}
+.theme-astro .header,
+.theme-astro .footer {
+  border-color: #e6e8ef;
+}
+.theme-astro .card {
+  background: #ffffff;
+  border: 1px solid #e6e8ef;
+  box-shadow: 0 8px 24px rgba(26,34,52,.06);
+}
+.theme-astro .muted { color: #66708a; }
+.theme-astro input, .theme-astro textarea {
+  background: #ffffff;
+  color: #1a2234;
+  border-color: #d4d9e3;
+}
+.theme-astro input:focus, .theme-astro textarea:focus {
+  border-color: #2b7cff;
+  box-shadow: 0 0 0 3px rgba(43,124,255,.15);
+  background: #fff;
+}
+
+/* Home header */
+.astro-header { padding-top: 20px; padding-bottom: 0; }
+.astro-topbar { display:flex; align-items:center; justify-content:space-between; }
+.astro-brand { display:flex; align-items:center; gap:12px; }
+.astro-logo { width:48px; height:48px; border-radius:10px; border:1px solid #e6e8ef; }
+.astro-title { font-weight:700; font-size:18px; }
+.astro-tagline { font-size:12px; color:#66708a; }
+.astro-nav a { color:#2b7cff; text-decoration:none; margin-left:12px; }
+.astro-nav a.active { font-weight:600; }
+
+/* Hero */
+.astro-hero {
+  display:grid; grid-template-columns: 1.2fr 0.8fr; gap:16px;
+  background: linear-gradient(180deg, #ffffff, #f7f8fc);
+  border: 1px solid #e6e8ef;
+  border-radius: 16px; padding: 18px; box-shadow: 0 8px 24px rgba(26,34,52,.06);
+  margin-top: 18px;
+}
+.astro-hero-content h1 { margin:0 0 6px 0; font-size:28px; }
+.astro-hero-content p { margin:0 0 12px 0; color:#66708a; }
+.astro-hero-actions { display:flex; gap:10px; }
+.astro-hero-illustration {
+  border-radius:12px; background: radial-gradient(300px 140px at 80% 20%, rgba(43,124,255,.12), transparent 60%), #fff;
+  border: 1px dashed #e6e8ef;
+}
+
+/* Sections */
+.astro-section { margin-top: 22px; }
+.astro-section-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+.astro-section-head { display:flex; align-items:center; justify-content:space-between; }
+
+/* Categories */
+.astro-categories { display:grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.astro-category-card {
+  background:#fff; border:1px solid #e6e8ef; border-radius:14px; padding:12px; text-align:center;
+  box-shadow: 0 8px 24px rgba(26,34,52,.06);
+}
+.astro-category-icon { font-size:20px; }
+.astro-category-name { font-weight:600; margin-top:6px; }
+
+/* Chips */
+.astro-chip {
+  border:1px solid #e0e6f2; background:#fff; color:#1a2234; border-radius:999px; padding:8px 12px; cursor:pointer;
+}
+.astro-chip.active { border-color:#2b7cff; color:#2b7cff; }
+
+/* Grid cards */
+.astro-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
+.astro-card {
+  display:flex; gap:12px; padding:12px; border:1px solid #e6e8ef; border-radius:14px; background:#fff; box-shadow: 0 8px 24px rgba(26,34,52,.06);
+}
+.astro-card-avatar { width:96px; height:96px; border-radius:12px; border:1px solid #e6e8ef; object-fit:cover; }
+.astro-card-info { flex:1; }
+.astro-card-name { font-weight:700; }
+.astro-card-meta { font-size:12px; color:#66708a; margin:3px 0; }
+.astro-card-skills { font-size:12px; color:#66708a; }
+.astro-card-actions { display:flex; gap:8px; margin-top:8px; }
+
+/* Buttons */
+.astro-btn { border:1px solid #d4d9e3; background:#fff; color:#1a2234; border-radius:10px; padding:10px 14px; cursor:pointer; }
+.astro-btn:hover { border-color:#2b7cff; color:#2b7cff; }
+.astro-btn-primary { background:#2b7cff; border-color:#2b7cff; color:#fff; box-shadow: 0 8px 16px rgba(43,124,255,.25); }
+.astro-btn-primary:hover { background:#1f66de; border-color:#1f66de; }
+.astro-btn.sm { padding:8px 12px; }
+
+/* Why section */
+.astro-why { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.astro-why-card { display:flex; gap:12px; align-items:center; padding:12px; border:1px solid #e6e8ef; border-radius:14px; background:#fff; }
+.astro-why-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:#f1f4fb; }
+.astro-why-title { font-weight:700; }
+.astro-why-desc { font-size:12px; color:#66708a; }
+
+/* Footer */
+.astro-footer { margin-top: 24px; background:#fff; border-top:1px solid #e6e8ef; }
+.astro-footer-inner { display:flex; align-items:center; justify-content:space-between; }
+.astro-footer-links a { color:#2b7cff; text-decoration:none; margin-left:12px; }
+
+/* Responsive tweaks for home */
+@media (max-width: 980px) {
+  .astro-hero { grid-template-columns: 1fr; }
+  .astro-categories { grid-template-columns: repeat(3, 1fr); }
+  .astro-grid { grid-template-columns: 1fr; }
+  .astro-why { grid-template-columns: 1fr; }
+}
