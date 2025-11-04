@@ -11,25 +11,8 @@ $API = './api.php';
   <link href="./styles.css" rel="stylesheet">
   <link rel="icon" href="<?php echo h($APP_FAVICON_URL); ?>">
 </head>
-<body>
-  <header class="header">
-    <div class="container" style="display:flex;align-items:center;gap:12px">
-      <img src="<?php echo h($APP_LOGO_URL); ?>" alt="" width="48" height="48" style="border-radius:10px;border:1px solid #2a335a">
-      <div>
-        <h1 style="margin:0">Find Astrologers</h1>
-        <p style="margin:0" class="muted">Browse experts and book a consultation.</p>
-        <nav style="margin-top:8px">
-          <a href="./feed.php">Feed</a> |
-          <a href="./messages.php">Messages</a> |
-          <a href="./live.php">Live Rooms</a> |
-          <a href="./index.php">Calls</a> |
-          <a href="./astrologers.php">Astrologers</a> |
-          <a href="./bookings.php">Bookings</a> |
-          <a href="./wallet.php">Wallet</a>
-        </nav>
-      </div>
-    </div>
-  </header>
+<body class="theme-astro">
+  <?php include __DIR__ . '/header.php'; ?>
 
   <main class="container">
     <section class="card">
@@ -52,7 +35,7 @@ $API = './api.php';
     </section>
   </main>
 
-  <footer class="footer"><div class="container"><small>Demo directory</small></div></footer>
+  <?php include __DIR__ . '/footer.php'; ?>
 
   <script>
     const API = "<?php echo h($API); ?>";
@@ -82,17 +65,15 @@ $API = './api.php';
       els.list.innerHTML = '';
       items.forEach(a => {
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'astro-card';
         card.innerHTML = `
-          <div style="display:flex;gap:12px;align-items:center">
-            <img src="${a.avatar || 'https://placehold.co/64x64'}" width="64" height="64" style="border-radius:12px;border:1px solid #2a335a">
-            <div>
-              <div class="title">${a.name}</div>
-              <div class="muted">${a.skills.join(', ')}</div>
-              <div class="muted">⭐ ${a.rating} • ${a.reviewsCount} reviews • ₹${a.ratePerMin}/min</div>
-            </div>
-            <div style="margin-left:auto" class="actions">
-              <a href="./astrologer.php?id=${a.id}"><button>View Profile</button></a>
+          <img src="${a.avatar || 'https://placehold.co/96x96'}" class="astro-card-avatar">
+          <div class="astro-card-info">
+            <div class="astro-card-name">${a.name}</div>
+            <div class="astro-card-meta">⭐ ${a.rating} • ${a.reviewsCount} reviews • ₹${a.ratePerMin}/min</div>
+            <div class="astro-card-skills">${a.skills.join(', ')}</div>
+            <div class="astro-card-actions">
+              <a href="./astrologer.php?id=${a.id}"><button class="astro-btn astro-btn-primary sm">View Profile</button></a>
             </div>
           </div>
         `;

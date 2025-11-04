@@ -12,21 +12,8 @@ $id = $_GET['id'] ?? '';
   <link href="./styles.css" rel="stylesheet">
   <link rel="icon" href="<?php echo h($APP_FAVICON_URL); ?>">
 </head>
-<body>
-  <header class="header">
-    <div class="container" style="display:flex;align-items:center;gap:12px">
-      <img src="<?php echo h($APP_LOGO_URL); ?>" alt="" width="48" height="48" style="border-radius:10px;border:1px solid #2a335a">
-      <div>
-        <h1 style="margin:0">Astrologer Profile</h1>
-        <p style="margin:0" class="muted">View details, reviews, and book a slot.</p>
-        <nav style="margin-top:8px">
-          <a href="./astrologers.php">Back to Directory</a> |
-          <a href="./bookings.php">Bookings</a> |
-          <a href="./wallet.php">Wallet</a>
-        </nav>
-      </div>
-    </div>
-  </header>
+<body class="theme-astro">
+  <?php include __DIR__ . '/header.php'; ?>
 
   <main class="container">
     <section class="card" id="profile"></section>
@@ -57,7 +44,7 @@ $id = $_GET['id'] ?? '';
     </section>
   </main>
 
-  <footer class="footer"><div class="container"><small>Profile page</small></div></footer>
+  <?php include __DIR__ . '/footer.php'; ?>
 
   <script>
     const API = "<?php echo h($API); ?>";
@@ -91,7 +78,7 @@ $id = $_GET['id'] ?? '';
     function renderProfile(a) {
       els.profile.innerHTML = `
         <div style="display:flex;gap:12px;align-items:center">
-          <img src="${a.avatar || 'https://placehold.co/80x80'}" width="80" height="80" style="border-radius:14px;border:1px solid #2a335a">
+          <img src="${a.avatar || 'https://placehold.co/80x80'}" width="80" height="80" style="border-radius:14px;border:1px solid #e6e8ef">
           <div>
             <div class="title">${a.name}</div>
             <div class="muted">${a.bio}</div>
@@ -110,15 +97,15 @@ $id = $_GET['id'] ?? '';
       }
       list.forEach(s => {
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'astro-card';
         card.innerHTML = `
           <div style="display:flex;align-items:center;gap:12px">
             <div>
               <div class="title-sm">${new Date(s.start).toLocaleString()} - ${new Date(s.end).toLocaleString()}</div>
               <div class="muted">₹${s.price} • ${s.status}</div>
             </div>
-            <div style="margin-left:auto" class="actions">
-              ${s.status === 'available' ? `<button class="bookBtn" data-id="${s.slotId}">Book</button>` : `<button disabled>Booked</button>`}
+            <div style="margin-left:auto" class="astro-card-actions">
+              ${s.status === 'available' ? `<button class="astro-btn astro-btn-primary sm bookBtn" data-id="${s.slotId}">Book</button>` : `<button class="astro-btn sm" disabled>Booked</button>`}
             </div>
           </div>
         `;
@@ -145,7 +132,7 @@ $id = $_GET['id'] ?? '';
       }
       list.forEach(r => {
         const div = document.createElement('div');
-        div.className = 'card';
+        div.className = 'astro-card';
         div.innerHTML = `
           <div><strong>${r.user}</strong> • ⭐ ${r.rating}</div>
           <div>${r.text}</div>

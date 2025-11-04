@@ -11,19 +11,8 @@ $API = './api.php';
   <link href="./styles.css" rel="stylesheet">
   <link rel="icon" href="<?php echo h($APP_FAVICON_URL); ?>">
 </head>
-<body>
-  <header class="header">
-    <div class="container">
-      <h1>Astrology Social</h1>
-      <p>Share insights, connect with astrologers, and go live.</p>
-      <nav style="margin-top:8px">
-        <a href="./feed.php">Feed</a> |
-        <a href="./messages.php">Messages</a> |
-        <a href="./live.php">Live Rooms</a> |
-        <a href="./index.php">Calls</a>
-      </nav>
-    </div>
-  </header>
+<body class="theme-astro">
+  <?php include __DIR__ . '/header.php'; ?>
 
   <main class="container">
     <section class="card">
@@ -74,11 +63,7 @@ $API = './api.php';
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="container">
-      <small>Built with PHP + Agora</small>
-    </div>
-  </footer>
+  <?php include __DIR__ . '/footer.php'; ?>
 
   <script>
     const API = "<?php echo htmlspecialchars($API, ENT_QUOTES, 'UTF-8'); ?>";

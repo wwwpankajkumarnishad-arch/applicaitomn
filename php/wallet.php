@@ -11,21 +11,8 @@ $API = './api.php';
   <link href="./styles.css" rel="stylesheet">
   <link rel="icon" href="<?php echo h($APP_FAVICON_URL); ?>">
 </head>
-<body>
-  <header class="header">
-    <div class="container" style="display:flex;align-items:center;gap:12px">
-      <img src="<?php echo h($APP_LOGO_URL); ?>" alt="" width="48" height="48" style="border-radius:10px;border:1px solid #2a335a">
-      <div>
-        <h1 style="margin:0">Wallet</h1>
-        <p style="margin:0" class="muted">Top up and pay for consultations.</p>
-        <nav style="margin-top:8px">
-          <a href="./astrologers.php">Astrologers</a> |
-          <a href="./bookings.php">Bookings</a> |
-          <a href="./wallet.php">Wallet</a>
-        </nav>
-      </div>
-    </div>
-  </header>
+<body class="theme-astro">
+  <?php include __DIR__ . '/header.php'; ?>
 
   <main class="container">
     <section class="card">
@@ -52,7 +39,7 @@ $API = './api.php';
     </section>
   </main>
 
-  <footer class="footer"><div class="container"><small>Wallet page</small></div></footer>
+  <?php include __DIR__ . '/footer.php'; ?>
 
   <script>
     const API = "<?php echo h($API); ?>";

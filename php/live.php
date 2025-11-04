@@ -12,22 +12,8 @@ require_once __DIR__ . '/config.php';
   <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
   <script src="https://download.agora.io/sdk/release/AgoraRTM.min.js"></script>
 </head>
-<body>
-  <header class="header">
-    <div class="container" style="display:flex;align-items:center;gap:12px">
-      <img src="<?php echo h($APP_LOGO_URL); ?>" alt="" width="48" height="48" style="border-radius:10px;border:1px solid #2a335a">
-      <div>
-        <h1 style="margin:0">Live Rooms</h1>
-        <p style="margin:0" class="muted"><?php echo h($APP_TAGLINE); ?></p>
-        <nav style="margin-top:8px">
-          <a href="./feed.php">Feed</a> |
-          <a href="./messages.php">Messages</a> |
-          <a href="./live.php">Live Rooms</a> |
-          <a href="./index.php">Calls</a>
-        </nav>
-      </div>
-    </div>
-  </header>
+<body class="theme-astro">
+  <?php include __DIR__ . '/header.php'; ?>
 
   <main class="container">
     <section class="card">
@@ -70,9 +56,7 @@ require_once __DIR__ . '/config.php';
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="container"><small>Powered by Agora RTC + RTM</small></div>
-  </footer>
+  <?php include __DIR__ . '/footer.php'; ?>
 
   <script>
     const TOKEN_SERVER_URL = "<?php echo htmlspecialchars($TOKEN_SERVER_URL, ENT_QUOTES, 'UTF-8'); ?>";
