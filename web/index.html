@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="MegaPay - Flutter mobile payment app" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MegaPay</title>
+    <base href="/" />
+
+    <!-- Favicon (optional) -->
+    <!-- <link rel="icon" type="image/png" href="icons/Icon-192.png" /> -->
+
+    <link rel="manifest" href="manifest.json" />
+    <script>
+      var serviceWorkerVersion = null;
+    </script>
+    <script src="flutter.js" defer></script>
+  </head>
+  <body>
+    <script>
+      window.addEventListener('load', function (ev) {
+        _flutter.loader.loadEntrypoint({serviceWorker: {serviceWorkerVersion}})
+          .then(function(engineInitializer) {
+            return engineInitializer.initializeEngine();
+          })
+          .then(function(appRunner) {
+            return appRunner.runApp();
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "MegaPay",
+  "short_name": "MegaPay",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F7F9FC",
+  "theme_color": "#2D9CDB",
+  "description": "MegaPay - Flutter mobile payment app",
+  "orientation": "portrait",
+  "prefer_related_applications": false
+}
